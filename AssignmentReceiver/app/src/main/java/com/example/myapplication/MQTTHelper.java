@@ -65,23 +65,31 @@ public class MQTTHelper {
 
             @Override
             public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-                JSONObject object = new JSONObject(mqttMessage.toString());
-                Log.w("Mqtt-arrive", mqttMessage.toString());
+                try {
+                    Log.i("test", mqttMessage.toString());
+                    if (mqttMessage.toString().equals("1") || mqttMessage.toString().equals("0")) {
+                        Integer status = Integer.parseInt(mqttMessage.toString());
+                        notifyMessage(status);
+                    } else {
+                        JSONObject object = new JSONObject(mqttMessage.toString());
+                        Log.i("test", mqttMessage.toString());
+                        Log.w("Mqtt-arrive", mqttMessage.toString());
 
-                if (object.has("latitude") && object.has("longitude")) {
-                    Double latitude = object.getDouble("latitude");
-                    Double longitude = object.getDouble("longitude");
-                    LatLng position = new LatLng(latitude, longitude);
+                        if (object.has("lat") && object.has("lon")) {
+                            Double latitude = object.getDouble("lat");
+                            Double longitude = object.getDouble("lon");
+                            LatLng position = new LatLng(latitude, longitude);
 
-                    googleMap.clear();
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 10));
-                    googleMap.animateCamera(CameraUpdateFactory.zoomBy(100));
-                    googleMap.addMarker(new MarkerOptions().position(position).title("Khoa's Position"));
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(position));
-                } else if (object.has("door")) {
-                    notifyMessage(object.getInt("door"));
+                            googleMap.clear();
+                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 10));
+                            googleMap.animateCamera(CameraUpdateFactory.zoomBy(100));
+                            googleMap.addMarker(new MarkerOptions().position(position).title("Khoa's Position"));
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+                        }
+                    }
+
+                } catch (Exception e) {
                 }
-
             }
 
             @Override
